@@ -1,0 +1,26 @@
+WISKERS PUBLISHING HANDOFF
+
+Canonical website source:
+/Users/lowcostjosh/Documents/Tabby companion files/Projects/Launch/Website
+
+Repository target:
+catflap-syndication/wiskers-website
+
+The repository contains only the website source and licensed public assets. The surrounding company vault must not be uploaded. The GitHub organization name is unchanged.
+
+Local preview: npm ci, then npm run dev.
+Production build: npm run build.
+Build command for Cloudflare Pages: npm run build.
+Output directory: dist.
+
+Free hosting: use Cloudflare Pages. Connect the website GitHub repository for automatic deployments, or use wiskers-cloudflare-upload.zip with a Direct Upload project. Direct Upload projects cannot later switch to Git integration.
+
+Domain: confirm the registered domain to use for the wiskers brand before configuring it. No new domain has been registered or assumed. Add the chosen domain to the same Cloudflare account as the Pages project, select the free plan, and preserve existing DNS records. Enter the exact two assigned Cloudflare nameservers in Namecheap under Nameservers > Custom DNS. Then add the domain under the Pages project's Custom domains and wait for domain and certificate activation.
+
+Contact: joshuaaugustine.mba@gmail.com. Update the mailto links in index.html when the business email is ready.
+
+The cat asset remains licensed CC BY 4.0 with visible attribution. There are no API keys or backend services required.
+
+References:
+https://developers.cloudflare.com/pages/get-started/direct-upload/
+https://developers.cloudflare.com/pages/configuration/custom-domains/
