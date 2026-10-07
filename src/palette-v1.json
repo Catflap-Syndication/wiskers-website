@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "brand": "wiskers",
+  "colors": {
+    "deepNavy": "#091540",
+    "blueGreen": "#2f97c1",
+    "seaweed": "#25a583",
+    "lightCoral": "#ef767a",
+    "coffeeBean": "#15060d",
+    "offWhite": "#f3f0e9",
+    "black": "#000000"
+  }
+}

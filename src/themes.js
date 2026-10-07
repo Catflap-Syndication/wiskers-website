@@ -1,0 +1,18 @@
+const allowedThemes = ['day', 'night', 'twilight'];
+const root = document.documentElement;
+const buttons = [...document.querySelectorAll('[data-theme-choice]')];
+const systemDark = matchMedia('(prefers-color-scheme: dark)');
+let manualChoice = false;
+try { manualChoice = allowedThemes.includes(localStorage.getItem('wiskers-theme')); } catch {}
+export function currentTheme() { return allowedThemes.includes(root.dataset.theme) ? root.dataset.theme : 'day'; }
+function applyTheme(theme, persist = false) {
+ if (!allowedThemes.includes(theme)) return;
+ root.dataset.theme = theme;
+ buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.themeChoice === theme)));
+ document.querySelector('meta[name="theme-color"]').content = theme === 'day' ? '#f3f0e9' : theme === 'night' ? '#15060d' : '#091540';
+ if (persist) { manualChoice = true; try { localStorage.setItem('wiskers-theme', theme); } catch {} }
+ window.dispatchEvent(new CustomEvent('wiskers:themechange', {detail: {theme}}));
+}
+buttons.forEach(button => button.addEventListener('click', () => applyTheme(button.dataset.themeChoice, true)));
+systemDark.addEventListener('change', event => { if (!manualChoice) applyTheme(event.matches ? 'night' : 'day'); });
+applyTheme(currentTheme());

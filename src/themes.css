@@ -1,0 +1,62 @@
+/* Approved wiskers palette v1. Tints use these colors and off-white only. */
+:root {
+ --deep-navy:#091540; --blue-green:#2f97c1; --seaweed:#25a583;
+ --light-coral:#ef767a; --coffee-bean:#15060d; --off-white:#f3f0e9;
+ --surface-page:var(--off-white); --ink:var(--deep-navy);
+ --muted:color-mix(in srgb,var(--deep-navy) 72%,var(--off-white));
+ --panel:color-mix(in srgb,var(--blue-green) 9%,var(--off-white));
+ --panel-raised:color-mix(in srgb,var(--off-white) 86%,white);
+ --line:color-mix(in srgb,var(--deep-navy) 24%,var(--off-white));
+ --signal:var(--deep-navy); --logo-mark:var(--blue-green);
+ --cta:var(--deep-navy); --cta-hover:var(--coffee-bean); --on-cta:var(--off-white);
+ --focus:var(--deep-navy); --selection:color-mix(in srgb,var(--blue-green) 25%,var(--off-white));
+ --shadow:#09154033; --shadow-soft:#09154017; --backdrop:#091540b3;
+ --scene-frame:#091540; --scene-rim:#2f97c1; --scene-flap:#f3f0e9;
+ color-scheme:light;
+}
+:root[data-theme="night"] {
+ --surface-page:var(--coffee-bean); --ink:var(--off-white);
+ --muted:color-mix(in srgb,var(--off-white) 73%,var(--coffee-bean));
+ --panel:color-mix(in srgb,var(--deep-navy) 58%,var(--coffee-bean));
+ --panel-raised:color-mix(in srgb,var(--off-white) 7%,var(--coffee-bean));
+ --line:color-mix(in srgb,var(--blue-green) 52%,var(--coffee-bean));
+ --signal:var(--light-coral); --logo-mark:var(--blue-green);
+ --cta:var(--blue-green); --cta-hover:var(--seaweed); --on-cta:var(--deep-navy);
+ --focus:var(--light-coral); --selection:var(--deep-navy);
+ --shadow:#00000070; --shadow-soft:#00000030; --backdrop:#000000b3;
+ --scene-frame:#091540; --scene-rim:#2f97c1; --scene-flap:#2f97c1;
+ color-scheme:dark;
+}
+:root[data-theme="twilight"] {
+ --surface-page:var(--deep-navy); --ink:var(--off-white);
+ --muted:color-mix(in srgb,var(--off-white) 76%,var(--deep-navy));
+ --panel:color-mix(in srgb,var(--blue-green) 14%,var(--deep-navy));
+ --panel-raised:color-mix(in srgb,var(--blue-green) 23%,var(--deep-navy));
+ --line:color-mix(in srgb,var(--blue-green) 64%,var(--deep-navy));
+ --signal:var(--light-coral); --logo-mark:var(--light-coral);
+ --cta:var(--seaweed); --cta-hover:var(--blue-green); --on-cta:var(--deep-navy);
+ --focus:var(--light-coral); --selection:var(--coffee-bean);
+ --shadow:#00000055; --shadow-soft:#00000022; --backdrop:#15060dc2;
+ --scene-frame:#15060d; --scene-rim:#25a583; --scene-flap:#ef767a;
+ color-scheme:dark;
+}
+body{background:var(--surface-page);color:var(--ink)}
+a:focus-visible,button:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:var(--focus)}
+.wordmark-logo>g[fill]{fill:var(--ink)}
+.wordmark-logo>path[fill],.wordmark-logo>g[mask]{fill:var(--logo-mark)}
+.button,.problem-comparison thead{background:var(--cta);color:var(--on-cta)}
+.button:hover{background:var(--cta-hover)}
+.journey-active .journey-node[aria-pressed=true]{background:var(--cta);border-color:var(--cta);color:var(--on-cta)}
+.journey-active .journey-label,.journey-active .journey-node,.journey-detail-label,.problem-lead,.problem-comparison tbody th{color:var(--ink)}
+.journey-active .journey-node[aria-pressed=true]{color:var(--on-cta)}
+.journey-active .journey-node:hover:not([aria-pressed=true]){background:var(--panel);border-color:var(--focus)}
+.journey-detail{border-left-color:var(--seaweed)}
+.problem-shifts article{border-top-color:var(--seaweed)}
+.theme-switcher{display:flex;gap:3px;padding:4px;border:1px solid var(--line);border-radius:28px;background:var(--panel-raised)}
+.theme-switcher button{border:0;border-radius:22px;padding:9px 12px;background:transparent;color:var(--muted);font-size:12px;cursor:pointer;line-height:1.2}
+.theme-switcher button:hover{color:var(--ink)}
+.theme-switcher button[aria-pressed=true]{background:var(--cta);color:var(--on-cta)}
+.nav{height:auto;min-height:110px;gap:20px}
+.nav nav{gap:25px;margin-left:auto}
+@media(max-width:1100px){.nav{flex-wrap:wrap;padding-top:22px;padding-bottom:22px}.nav nav{gap:18px}.theme-switcher{margin-left:auto}}
+@media(max-width:650px){.nav{min-height:80px;gap:14px;padding-top:22px;padding-bottom:12px}.nav nav{gap:18px}.theme-switcher{margin-left:auto}.theme-switcher button{padding:8px 13px}.wordmark-logo{width:128px}}

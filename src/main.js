@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import './style.css';
+import './themes.css';
+import './themes.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const mount=document.querySelector('#scene'), status=document.querySelector('#status');
 const scene=new THREE.Scene();scene.background=null;
 const camera=new THREE.PerspectiveCamera(32,mount.clientWidth/mount.clientHeight,.01,20);camera.position.set(0,.305,1.18);camera.lookAt(0,.27,.08);
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(mount.clientWidth,mount.clientHeight);renderer.localClippingEnabled=true;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;mount.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xffffff,0x8b7761,2.3));const light=new THREE.DirectionalLight(0xfff0dc,3);light.position.set(-1,2,3);scene.add(light);const fill=new THREE.DirectionalLight(0xffffff,1.1);fill.position.set(2,.5,2);scene.add(fill);
-const mat=new THREE.MeshBasicMaterial({color:'#f3f0e9',toneMapped:false});const dark=new THREE.MeshStandardMaterial({color:'#26241f',roughness:1});
+const ambient=new THREE.HemisphereLight(0xffffff,0x091540,2.3);scene.add(ambient);const light=new THREE.DirectionalLight(0xfff0dc,3);light.position.set(-1,2,3);scene.add(light);const fill=new THREE.DirectionalLight(0xffffff,1.1);fill.position.set(2,.5,2);scene.add(fill);
+const mat=new THREE.MeshBasicMaterial({color:'#f3f0e9',toneMapped:false});const dark=new THREE.MeshStandardMaterial({color:'#15060d',roughness:1});
 function box(w,h,d,x,y,z,material=mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);scene.add(m);return m;}
 // The surrounding surface physically occludes the shoulders and body behind the aperture.
 const opening={left:-.115,right:.115,bottom:.19,top:.437},wallZ=.24;
@@ -26,9 +28,9 @@ function frameRing(w,h,r,holeW,holeH,holeR,cy,holeCy,z,depth,material,bevel){
  const geo=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:bevel,bevelThickness:bevel,bevelSegments:3,steps:1,curveSegments:16});
  const mesh=new THREE.Mesh(geo,material);mesh.position.z=z;scene.add(mesh);return mesh;
 }
-const housingMat=new THREE.MeshStandardMaterial({color:'#3b3e3b',roughness:.56,metalness:.12});
-const gasketMat=new THREE.MeshStandardMaterial({color:'#30352e',roughness:.84});
-const rimMat=new THREE.MeshStandardMaterial({color:'#989b89',roughness:.34,metalness:.38});
+const housingMat=new THREE.MeshStandardMaterial({color:'#091540',roughness:.56,metalness:.12});
+const gasketMat=new THREE.MeshStandardMaterial({color:'#15060d',roughness:.84});
+const rimMat=new THREE.MeshStandardMaterial({color:'#2f97c1',roughness:.34,metalness:.38});
 frameRing(.302,.305,.029,.232,.223,.020,.3285,.3275,.249,.016,housingMat,.0035);
 frameRing(.242,.233,.024,.228,.219,.017,.3275,.3275,.270,.007,gasketMat,.001);
 frameRing(.235,.226,.021,.228,.219,.017,.3275,.3275,.279,.002,rimMat,.0008);
@@ -46,15 +48,15 @@ box(.23,.247,.006,0,.3135,-.045,dark);
 function flapTextures(){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=512;
  const ctx=canvas.getContext('2d');
- ctx.fillStyle='#aaa999';ctx.fillRect(0,0,1024,512);
+ ctx.fillStyle='#f3f0e9';ctx.fillRect(0,0,1024,512);
  let seed=17;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
  for(let i=0;i<85000;i++){const shade=random()>.5?'255,255,255':'35,38,32';ctx.fillStyle=`rgba(${shade},${.025+random()*.045})`;ctx.fillRect(random()*1024,random()*512,1+random()*2,1+random()*2);}
  for(let x=60;x<1000;x+=48){ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(x,30,2,450);ctx.fillStyle='rgba(35,38,32,.035)';ctx.fillRect(x+2,30,2,450);}
  function outline(inset){const r=55;ctx.beginPath();ctx.moveTo(inset,inset);ctx.lineTo(1024-inset,inset);ctx.lineTo(1024-inset,512-r);ctx.quadraticCurveTo(1024-inset,512-inset,1024-r,512-inset);ctx.lineTo(r,512-inset);ctx.quadraticCurveTo(inset,512-inset,inset,512-r);ctx.closePath();}
- ctx.strokeStyle='#75786b';ctx.lineWidth=12;outline(8);ctx.stroke();
+ ctx.strokeStyle='#15060d';ctx.lineWidth=12;outline(8);ctx.stroke();
  ctx.strokeStyle='rgba(230,231,210,.5)';ctx.lineWidth=2;outline(19);ctx.stroke();
- ctx.fillStyle='#61665a';ctx.fillRect(0,477,1024,35);
- ctx.fillStyle='#8b8f7c';ctx.fillRect(0,477,1024,3);
+ ctx.fillStyle='#091540';ctx.fillRect(0,477,1024,35);
+ ctx.fillStyle='#2f97c1';ctx.fillRect(0,477,1024,3);
  // A quiet recessed panel catches light without introducing a logo.
  ctx.strokeStyle='rgba(65,70,57,.17)';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(410,402,204,40,12);ctx.stroke();
  const color=new THREE.CanvasTexture(canvas);color.colorSpace=THREE.SRGBColorSpace;color.anisotropy=renderer.capabilities.getMaxAnisotropy();
@@ -64,10 +66,10 @@ function flapTextures(){
  return {color,bump};
 }
 const vinyl=flapTextures();
-const hingeMat=new THREE.MeshStandardMaterial({color:'#96998b',roughness:.4,metalness:.3});
+const hingeMat=new THREE.MeshStandardMaterial({color:'#2f97c1',roughness:.4,metalness:.3});
 box(.228,.009,.006,0,.438,.264,hingeMat);
 for(const x of [-.094,0,.094]){
- const screw=new THREE.Mesh(new THREE.CylinderGeometry(.0026,.0026,.0015,16),new THREE.MeshStandardMaterial({color:'#babeb1',metalness:.65,roughness:.3}));
+ const screw=new THREE.Mesh(new THREE.CylinderGeometry(.0026,.0026,.0015,16),new THREE.MeshStandardMaterial({color:'#f3f0e9',metalness:.65,roughness:.3}));
  screw.rotation.x=Math.PI/2;screw.position.set(x,.438,.268);scene.add(screw);
  box(.0034,.00045,.0003,x,.438,.269,dark);
 }
@@ -79,6 +81,22 @@ const flapGeometry=new THREE.PlaneGeometry(clothWidth,clothLength,clothCols,clot
 const flap=new THREE.Mesh(flapGeometry,new THREE.MeshStandardMaterial({
  color:'#ffffff',map:vinyl.color,bumpMap:vinyl.bump,bumpScale:.00018,roughness:.61,metalness:0,side:THREE.DoubleSide
 }));flap.frustumCulled=false;scene.add(flap);
+// Match the occluding wall to the page so the canvas blends in for every theme.
+function applySceneTheme(){
+ const style=getComputedStyle(document.documentElement);
+ const token=name=>style.getPropertyValue(name).trim();
+ mat.color.set(token('--surface-page'));
+ housingMat.color.set(token('--scene-frame'));
+ rimMat.color.set(token('--scene-rim'));hingeMat.color.set(token('--scene-rim'));
+ gasketMat.color.set('#15060d');
+ flap.material.color.set(token('--scene-flap'));
+ const day=document.documentElement.dataset.theme==='day';
+ ambient.intensity=day?2.3:1.8;light.intensity=day?3:2.6;fill.intensity=day?1.1:1.4;
+ light.color.set(day?'#ffffff':'#f3f0e9');
+}
+window.addEventListener('wiskers:themechange',applySceneTheme);
+applySceneTheme();
+
 const cloth=[],clothLinks=[],flapCorner=.012;
 for(let row=0;row<=clothRows;row++)for(let col=0;col<=clothCols;col++){
  const t=row/clothRows;
