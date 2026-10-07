@@ -27,3 +27,7 @@ The cat is “cartoon 3D cat” by berti_buchsbaum, licensed CC BY 4.0. Public a
 ## Thesis visual
 
 The From reading to doing section adapts the supplied flow diagram into a responsive comparison with three explorable steps. Quantified bounce and ROI statements from the reference are omitted pending evidence. The mechanism is presented as a working thesis.
+
+## Color schemes
+
+Day, Night and Twilight can be selected in the header. Selection persists locally; the initial default follows system light/dark preference. `src/themes.css` defines all semantic colors, including the scene materials. `src/palette-v1.json` holds the approved v1 palette.
