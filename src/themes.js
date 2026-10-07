@@ -9,7 +9,7 @@ function applyTheme(theme, persist = false) {
  if (!allowedThemes.includes(theme)) return;
  root.dataset.theme = theme;
  buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.themeChoice === theme)));
- document.querySelector('meta[name="theme-color"]').content = theme === 'day' ? '#f3f0e9' : theme === 'night' ? '#15060d' : '#091540';
+ document.querySelector('meta[name="theme-color"]').content = theme === 'day' ? '#f3f0e9' : theme === 'night' ? '#000000' : '#15060d';
  if (persist) { manualChoice = true; try { localStorage.setItem('wiskers-theme', theme); } catch {} }
  window.dispatchEvent(new CustomEvent('wiskers:themechange', {detail: {theme}}));
 }
