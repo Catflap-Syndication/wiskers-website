@@ -1,7 +1,7 @@
 WISKERS PUBLISHING HANDOFF
 
 Canonical website source:
-/Users/lowcostjosh/Documents/Tabby companion files/Projects/Launch/Website
+[local website project directory]
 
 Repository target:
 catflap-syndication/wiskers-website
@@ -17,7 +17,7 @@ Free hosting: use Cloudflare Pages. Connect the website GitHub repository for au
 
 Domain: confirm the registered domain to use for the wiskers brand before configuring it. No new domain has been registered or assumed. Add the chosen domain to the same Cloudflare account as the Pages project, select the free plan, and preserve existing DNS records. Enter the exact two assigned Cloudflare nameservers in Namecheap under Nameservers > Custom DNS. Then add the domain under the Pages project's Custom domains and wait for domain and certificate activation.
 
-Contact: joshuaaugustine.mba@gmail.com. Update the mailto links in index.html when the business email is ready.
+Customer contact: hello@whiskers.click.
 
 The cat asset remains licensed CC BY 4.0 with visible attribution. There are no API keys or backend services required.
 

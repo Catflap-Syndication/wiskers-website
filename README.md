@@ -8,7 +8,7 @@ Run `npm ci`, then `npm run dev`. Run `npm run build` to create the static publi
 
 ## Contact
 
-The temporary contact address is joshuaaugustine.mba@gmail.com. Update the links in index.html when the business address is ready.
+Customer contact: hello@whiskers.click.
 
 ## Publishing
 
