@@ -15,9 +15,9 @@ Output directory: dist.
 
 Free hosting: use Cloudflare Pages. Connect the website GitHub repository for automatic deployments, or use wiskers-cloudflare-upload.zip with a Direct Upload project. Direct Upload projects cannot later switch to Git integration.
 
-Website domain: wiskers.click. Add wiskers.click to the same Cloudflare account as the Pages project, select the free plan, and preserve existing DNS records. Before changing nameservers in Namecheap, make sure the current mail records for hello@whiskers.click are recreated in Cloudflare DNS so customer email keeps working. Enter the exact two assigned Cloudflare nameservers in Namecheap under Nameservers > Custom DNS. Then add wiskers.click under the Pages project's Custom domains and wait for domain and certificate activation.
+Website domain: wiskers.click. The similarly spelled whiskers.click is not our domain. Add wiskers.click to the same Cloudflare account as the Pages project, select the free plan, and preserve existing DNS records. Before changing nameservers in Namecheap, make sure the current mail records for hello@wiskers.click are recreated in Cloudflare DNS so customer email keeps working. Enter the exact two assigned Cloudflare nameservers in Namecheap under Nameservers > Custom DNS. Then add wiskers.click under the Pages project's Custom domains and wait for domain and certificate activation.
 
-Customer contact: hello@whiskers.click.
+Customer contact: hello@wiskers.click.
 
 The cat asset remains licensed CC BY 4.0 with visible attribution. There are no API keys or backend services required.
 

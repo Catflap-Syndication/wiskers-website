@@ -8,7 +8,7 @@ Run `npm ci`, then `npm run dev`. Run `npm run build` to create the static publi
 
 ## Contact
 
-Website domain: https://wiskers.click. Customer contact: hello@whiskers.click.
+Website domain: https://wiskers.click. Customer contact: hello@wiskers.click. The similarly spelled whiskers.click is not our domain.
 
 ## Publishing
 
