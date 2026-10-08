@@ -15,7 +15,7 @@ Output directory: dist.
 
 Free hosting: use Cloudflare Pages. Connect the website GitHub repository for automatic deployments, or use wiskers-cloudflare-upload.zip with a Direct Upload project. Direct Upload projects cannot later switch to Git integration.
 
-Domain: confirm the registered domain to use for the wiskers brand before configuring it. No new domain has been registered or assumed. Add the chosen domain to the same Cloudflare account as the Pages project, select the free plan, and preserve existing DNS records. Enter the exact two assigned Cloudflare nameservers in Namecheap under Nameservers > Custom DNS. Then add the domain under the Pages project's Custom domains and wait for domain and certificate activation.
+Website domain: wiskers.click. Add wiskers.click to the same Cloudflare account as the Pages project, select the free plan, and preserve existing DNS records. Before changing nameservers in Namecheap, make sure the current mail records for hello@whiskers.click are recreated in Cloudflare DNS so customer email keeps working. Enter the exact two assigned Cloudflare nameservers in Namecheap under Nameservers > Custom DNS. Then add wiskers.click under the Pages project's Custom domains and wait for domain and certificate activation.
 
 Customer contact: hello@whiskers.click.
 

@@ -8,13 +8,13 @@ Run `npm ci`, then `npm run dev`. Run `npm run build` to create the static publi
 
 ## Contact
 
-Customer contact: hello@whiskers.click.
+Website domain: https://wiskers.click. Customer contact: hello@whiskers.click.
 
 ## Publishing
 
 Prepared for a static host such as Cloudflare Pages (free tier). Build command: `npm run build`. Output folder: `dist`. No runtime server or secret keys are required. A direct upload of the built dist folder also works.
 
-GitHub can store this website source as its own repository, without uploading the vault. GitHub Pages is not the selected host because its usage rules restrict online business hosting. DNS records depend on the selected hosting project; do not point the domain until the project exists.
+GitHub can store this website source as its own repository, without uploading the vault. GitHub Pages is not the selected host because its usage rules restrict online business hosting. Configure wiskers.click with the selected hosting project and preserve the existing email DNS records when changing nameservers.
 
 ## Content basis
 
