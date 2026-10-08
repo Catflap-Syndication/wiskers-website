@@ -4,7 +4,7 @@ Canonical website source:
 [local website project directory]
 
 Repository target:
-catflap-syndication/wiskers-website
+wiskersofficial/wiskers-website
 
 The repository contains only the website source and licensed public assets. The surrounding company vault must not be uploaded. The GitHub organization name is unchanged.
 
