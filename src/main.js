@@ -255,15 +255,15 @@ function mountCatScene(options){
  }
 }
 mountCatScene({mount:document.querySelector('#scene'),status:document.querySelector('#status'),motionButton:document.querySelector('#motion')});
-const contactMount=document.querySelector('#scene-contact');
-if(contactMount){
- // Allocate the second renderer only when someone approaches the contact area.
+const returnMount=document.querySelector('#scene-return');
+if(returnMount){
+ // Allocate the return scene only when someone approaches it.
  const observer=new IntersectionObserver(entries=>{
   if(!entries.some(entry=>entry.isIntersecting))return;
   observer.disconnect();
-  mountCatScene({mount:contactMount,status:document.querySelector('#status-contact'),motionButton:document.querySelector('#motion-contact'),surfaceToken:'--panel',variant:'contact'});
+  mountCatScene({mount:returnMount,status:document.querySelector('#status-return'),motionButton:document.querySelector('#motion-return'),surfaceToken:'--surface-page',variant:'return'});
  },{rootMargin:'250px'});
- observer.observe(contactMount);
+ observer.observe(returnMount);
 }
 
 // Accessible step exploration for the thesis diagram.
