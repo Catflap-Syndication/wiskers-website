@@ -220,7 +220,7 @@ function updateScrollGaze(){
  const angle=progress*Math.PI*2;
  const sweep=.78;
  scrollX=Math.sin(angle)*sweep;
- scrollY=Math.cos(angle)*sweep;
+ scrollY=0;
  scrollDirty=false;
 }
 window.addEventListener('scroll',()=>{scrollDirty=true;wake();},{passive:true});
