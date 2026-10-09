@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import './style.css';
 import './themes.css';
+import './mobile.css';
 import './themes.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
@@ -106,7 +107,7 @@ function applySceneTheme(){
  ambient.intensity=day?2.3:1.8;light.intensity=day?3:2.6;fill.intensity=day?1.1:1.4;
  light.color.set(day?'#ffffff':'#f3f0e9');
 }
-window.addEventListener('wiskers:themechange',applySceneTheme);
+window.addEventListener('wiskers:themechange',()=>{applySceneTheme();wake();});
 applySceneTheme();
 
 const cloth=[],clothLinks=[],flapCorner=.012;
@@ -174,7 +175,7 @@ function updateFlap(rotation,dt){
 }
 const pivot=new THREE.Vector3(0,.245,.115), records=[], eyes=[];
 let loaded=false,targetX=0,targetY=0,yaw=0,pitch=0,eyeYaw=0,eyePitch=0;
-if(motionButton){motionButtons.add(motionButton);syncMotionButtons();motionButton.addEventListener('click',()=>{paused=!paused;syncMotionButtons();});}
+if(motionButton){motionButtons.add(motionButton);syncMotionButtons();motionButton.addEventListener('click',()=>{paused=!paused;syncMotionButtons();wake();});}
 const v=new THREE.Vector3(),n=new THREE.Vector3(),q=new THREE.Quaternion(),eyeQ=new THREE.Quaternion(),euler=new THREE.Euler(0,0,0,'YXZ');
 loadCat().then(gltf=>{
  gltf.scene.updateMatrixWorld(true);
@@ -203,7 +204,7 @@ loadCat().then(gltf=>{
  });
  loaded=true;status.hidden=true;
  const diagnostics={loaded:true,meshes:records.length,eyeMeshes:eyes.length,setTarget:(x,y)=>{targetX=x;targetY=y;},getPose:()=>({yaw,pitch,eyeYaw,eyePitch}),getInputMode:()=>mobileInput.matches?'scroll':'pointer'};
- window.wiskersScenes??={};window.wiskersScenes[variant]=diagnostics;
+ window.wiskersScenes??={};window.wiskersScenes[variant]=diagnostics;wake();
  if(variant==='hero')window.wiskersPrototype=diagnostics;
 }).catch(error=>{status.textContent='The cat could not load. Please refresh.';console.error(error);});
 function pointer(x,y){const rect=mount.getBoundingClientRect(),face=new THREE.Vector3(0,.31+headLift,.23).project(camera);const cx=rect.left+(face.x+1)*rect.width/2,cy=rect.top+(1-face.y)*rect.height/2;targetX=THREE.MathUtils.clamp((x-cx)/(innerWidth*.45),-1,1);targetY=THREE.MathUtils.clamp((y-cy)/(innerHeight*.4),-1,1);}
@@ -213,15 +214,15 @@ let scrollDirty=true,scrollX=0,scrollY=0,tapUntil=0,tapX=0,tapY=0,touchStart=nul
 function updateScrollGaze(){
  const rect=mount.getBoundingClientRect();
  const progress=THREE.MathUtils.clamp((innerHeight-rect.top)/(innerHeight+rect.height),0,1);
- scrollX=Math.sin(progress*Math.PI*2)*(variant==='contact'?.24:.30);
- scrollY=(progress-.5)*(variant==='contact'?1.05:1.25);
+ scrollX=Math.sin(progress*Math.PI*2)*(variant==='return'?.24:.30);
+ scrollY=(progress-.5)*(variant==='return'?1.05:1.25);
  scrollDirty=false;
 }
-window.addEventListener('scroll',()=>{scrollDirty=true;},{passive:true});
-mobileInput.addEventListener('change',()=>{scrollDirty=true;tapUntil=0;targetX=targetY=0;});
-window.addEventListener('pointermove',ev=>{if(ev.pointerType==='mouse'&&!mobileInput.matches)pointer(ev.clientX,ev.clientY);},{passive:true});
-document.documentElement.addEventListener('pointerleave',()=>{targetX=targetY=0;});
-window.addEventListener('blur',()=>{targetX=targetY=0;tapUntil=0;});
+window.addEventListener('scroll',()=>{scrollDirty=true;wake();},{passive:true});
+mobileInput.addEventListener('change',()=>{scrollDirty=true;tapUntil=0;targetX=targetY=0;wake();});
+window.addEventListener('pointermove',ev=>{if(ev.pointerType==='mouse'&&!mobileInput.matches){pointer(ev.clientX,ev.clientY);wake();}},{passive:true});
+document.documentElement.addEventListener('pointerleave',()=>{targetX=targetY=0;wake();});
+window.addEventListener('blur',()=>{targetX=targetY=0;tapUntil=0;wake();});
 // A tap is optional. Pointer movement or page movement cancels it, so a normal
 // swipe through the cat never turns into a tap or blocks the browser's gestures.
 mount.addEventListener('pointerdown',ev=>{
@@ -234,17 +235,25 @@ mount.addEventListener('pointerup',ev=>{
  const start=touchStart;touchStart=null;
  if(!start||start.id!==ev.pointerId||paused)return;
  if(performance.now()-start.time>500||Math.hypot(ev.clientX-start.x,ev.clientY-start.y)>12||Math.abs(window.scrollY-start.scroll)>8)return;
- pointer(ev.clientX,ev.clientY);tapX=targetX*.75;tapY=targetY*.75;tapUntil=performance.now()+1300;
+ pointer(ev.clientX,ev.clientY);tapX=targetX*.75;tapY=targetY*.75;tapUntil=performance.now()+1300;wake();
 },{passive:true});
-function resize(){scrollDirty=true;camera.aspect=mount.clientWidth/mount.clientHeight;camera.position.z=camera.aspect<.65?1.38:1.18;camera.updateProjectionMatrix();renderer.setSize(mount.clientWidth,mount.clientHeight);}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(mount);resize();
-let sceneVisible=true;new IntersectionObserver(([entry])=>{sceneVisible=entry.isIntersecting;scrollDirty=true;},{rootMargin:'100px'}).observe(mount);
-let previous=performance.now();renderer.setAnimationLoop(now=>{const dt=Math.min((now-previous)/1000,.05);previous=now;if(document.hidden||!sceneVisible)return;
+function resize(){scrollDirty=true;camera.aspect=mount.clientWidth/mount.clientHeight;camera.position.z=camera.aspect<.65?1.38:1.18;camera.updateProjectionMatrix();renderer.setSize(mount.clientWidth,mount.clientHeight);wake();}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(mount);
+let sceneVisible=true;new IntersectionObserver(([entry])=>{sceneVisible=entry.isIntersecting;scrollDirty=true;if(sceneVisible)wake();else{running=false;renderer.setAnimationLoop(null);}},{rootMargin:'100px'}).observe(mount);
+let previous=performance.now(),running=true,lastActivity=performance.now(),stableFrames=0;
+function wake(){lastActivity=performance.now();stableFrames=0;if(!sceneVisible||document.hidden){running=false;return;}if(!running){running=true;previous=performance.now();renderer.setAnimationLoop(tick);}}
+resize();
+document.addEventListener('visibilitychange',()=>{if(document.hidden){running=false;renderer.setAnimationLoop(null);}else wake();});
+function tick(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(document.hidden||!sceneVisible)return;
  if(mobileInput.matches&&!paused){if(scrollDirty)updateScrollGaze();targetX=now<tapUntil?tapX:scrollX;targetY=now<tapUntil?tapY:scrollY;}
  const x=paused?0:targetX,y=paused?0:targetY;yaw=THREE.MathUtils.damp(yaw,x*(mobileInput.matches?.27:.34),9,dt);pitch=THREE.MathUtils.damp(pitch,y*(mobileInput.matches?.15:.19),9,dt);eyeYaw=THREE.MathUtils.damp(eyeYaw,x*.12,18,dt);eyePitch=THREE.MathUtils.damp(eyePitch,y*.08,18,dt);q.setFromEuler(euler.set(pitch+.075,yaw,0));eyeQ.setFromEuler(euler.set(eyePitch,eyeYaw,0));
  if(loaded)for(const r of records){const p=r.mesh.geometry.attributes.position,normal=r.mesh.geometry.attributes.normal;for(let i=0;i<p.count;i++){const j=i*3;v.fromArray(r.base,j);n.fromArray(r.normals,j);if(r.eye){v.sub(r.center).applyQuaternion(eyeQ).add(r.center);n.applyQuaternion(eyeQ);v.sub(pivot).applyQuaternion(q).add(pivot);n.applyQuaternion(q);}else{const w=r.weights[i];if(w>0){const bx=v.x,by=v.y,bz=v.z;v.sub(pivot).applyQuaternion(q).add(pivot);v.set(THREE.MathUtils.lerp(bx,v.x,w),THREE.MathUtils.lerp(by,v.y,w),THREE.MathUtils.lerp(bz,v.z,w));const nx=n.x,ny=n.y,nz=n.z;n.applyQuaternion(q);n.set(THREE.MathUtils.lerp(nx,n.x,w),THREE.MathUtils.lerp(ny,n.y,w),THREE.MathUtils.lerp(nz,n.z,w)).normalize();}}p.setXYZ(i,v.x,v.y,v.z);normal.setXYZ(i,n.x,n.y,n.z);}p.needsUpdate=normal.needsUpdate=true;}
  updateFlap(q,dt);
  renderer.render(scene,camera);
-});
+ const poseSettled=Math.abs(yaw-(paused?0:targetX*(mobileInput.matches?.27:.34)))<.0008&&Math.abs(pitch-(paused?0:targetY*(mobileInput.matches?.15:.19)))<.0008&&Math.abs(eyeYaw-(paused?0:targetX*.12))<.0008&&Math.abs(eyePitch-(paused?0:targetY*.08))<.0008;
+ if(poseSettled&&now-lastActivity>2500){stableFrames++;if(stableFrames>32){running=false;renderer.setAnimationLoop(null);}}
+ else stableFrames=0;
+}
+renderer.setAnimationLoop(tick);
 
 }
 function mountCatScene(options){
