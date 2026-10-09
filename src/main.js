@@ -214,8 +214,11 @@ let scrollDirty=true,scrollX=0,scrollY=0,tapUntil=0,tapX=0,tapY=0,touchStart=nul
 function updateScrollGaze(){
  const rect=mount.getBoundingClientRect();
  const progress=THREE.MathUtils.clamp((innerHeight-rect.top)/(innerHeight+rect.height),0,1);
- scrollX=Math.sin(progress*Math.PI*2)*(variant==='return'?.24:.30);
- scrollY=(progress-.5)*(variant==='return'?1.05:1.25);
+ // Give each cat its own full gaze sweep as its scene travels through the
+ // viewport. The return cat uses its own rect, so its motion restarts at its
+ // own scroll position instead of mirroring the hero cat.
+ scrollX=Math.sin(progress*Math.PI*2);
+ scrollY=(progress-.5)*2;
  scrollDirty=false;
 }
 window.addEventListener('scroll',()=>{scrollDirty=true;wake();},{passive:true});
@@ -245,11 +248,11 @@ resize();
 document.addEventListener('visibilitychange',()=>{if(document.hidden){running=false;renderer.setAnimationLoop(null);}else wake();});
 function tick(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(document.hidden||!sceneVisible)return;
  if(mobileInput.matches&&!paused){if(scrollDirty)updateScrollGaze();targetX=now<tapUntil?tapX:scrollX;targetY=now<tapUntil?tapY:scrollY;}
- const x=paused?0:targetX,y=paused?0:targetY;yaw=THREE.MathUtils.damp(yaw,x*(mobileInput.matches?.27:.34),9,dt);pitch=THREE.MathUtils.damp(pitch,y*(mobileInput.matches?.15:.19),9,dt);eyeYaw=THREE.MathUtils.damp(eyeYaw,x*.12,18,dt);eyePitch=THREE.MathUtils.damp(eyePitch,y*.08,18,dt);q.setFromEuler(euler.set(pitch+.075,yaw,0));eyeQ.setFromEuler(euler.set(eyePitch,eyeYaw,0));
+ const x=paused?0:targetX,y=paused?0:targetY;yaw=THREE.MathUtils.damp(yaw,x*(mobileInput.matches?.58:.34),9,dt);pitch=THREE.MathUtils.damp(pitch,y*(mobileInput.matches?.34:.19),9,dt);eyeYaw=THREE.MathUtils.damp(eyeYaw,x*(mobileInput.matches?.22:.12),18,dt);eyePitch=THREE.MathUtils.damp(eyePitch,y*(mobileInput.matches?.14:.08),18,dt);q.setFromEuler(euler.set(pitch+.075,yaw,0));eyeQ.setFromEuler(euler.set(eyePitch,eyeYaw,0));
  if(loaded)for(const r of records){const p=r.mesh.geometry.attributes.position,normal=r.mesh.geometry.attributes.normal;for(let i=0;i<p.count;i++){const j=i*3;v.fromArray(r.base,j);n.fromArray(r.normals,j);if(r.eye){v.sub(r.center).applyQuaternion(eyeQ).add(r.center);n.applyQuaternion(eyeQ);v.sub(pivot).applyQuaternion(q).add(pivot);n.applyQuaternion(q);}else{const w=r.weights[i];if(w>0){const bx=v.x,by=v.y,bz=v.z;v.sub(pivot).applyQuaternion(q).add(pivot);v.set(THREE.MathUtils.lerp(bx,v.x,w),THREE.MathUtils.lerp(by,v.y,w),THREE.MathUtils.lerp(bz,v.z,w));const nx=n.x,ny=n.y,nz=n.z;n.applyQuaternion(q);n.set(THREE.MathUtils.lerp(nx,n.x,w),THREE.MathUtils.lerp(ny,n.y,w),THREE.MathUtils.lerp(nz,n.z,w)).normalize();}}p.setXYZ(i,v.x,v.y,v.z);normal.setXYZ(i,n.x,n.y,n.z);}p.needsUpdate=normal.needsUpdate=true;}
  updateFlap(q,dt);
  renderer.render(scene,camera);
- const poseSettled=Math.abs(yaw-(paused?0:targetX*(mobileInput.matches?.27:.34)))<.0008&&Math.abs(pitch-(paused?0:targetY*(mobileInput.matches?.15:.19)))<.0008&&Math.abs(eyeYaw-(paused?0:targetX*.12))<.0008&&Math.abs(eyePitch-(paused?0:targetY*.08))<.0008;
+ const poseSettled=Math.abs(yaw-(paused?0:targetX*(mobileInput.matches?.58:.34)))<.0008&&Math.abs(pitch-(paused?0:targetY*(mobileInput.matches?.34:.19)))<.0008&&Math.abs(eyeYaw-(paused?0:targetX*(mobileInput.matches?.22:.12)))<.0008&&Math.abs(eyePitch-(paused?0:targetY*(mobileInput.matches?.14:.08)))<.0008;
  if(poseSettled&&now-lastActivity>2500){stableFrames++;if(stableFrames>32){running=false;renderer.setAnimationLoop(null);}}
  else stableFrames=0;
 }
