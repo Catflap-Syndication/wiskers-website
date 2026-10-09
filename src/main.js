@@ -217,8 +217,10 @@ function updateScrollGaze(){
  // Give each cat its own full gaze sweep as its scene travels through the
  // viewport. The return cat uses its own rect, so its motion restarts at its
  // own scroll position instead of mirroring the hero cat.
- scrollX=Math.sin(progress*Math.PI*2);
- scrollY=(progress-.5)*2;
+ const angle=progress*Math.PI*2;
+ const sweep=.78;
+ scrollX=Math.sin(angle)*sweep;
+ scrollY=Math.cos(angle)*sweep;
  scrollDirty=false;
 }
 window.addEventListener('scroll',()=>{scrollDirty=true;wake();},{passive:true});
