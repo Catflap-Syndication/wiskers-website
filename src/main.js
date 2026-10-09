@@ -6,6 +6,15 @@ import './themes.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 const mobileInput=matchMedia('(hover: none), (pointer: coarse)');
+const foldViewport=matchMedia('(min-width: 481px) and (max-width: 700px)');
+const ipadViewport=matchMedia('(min-width: 701px) and (max-width: 1024px)');
+function syncViewportClass(){
+ document.documentElement.classList.toggle('viewport-fold',foldViewport.matches);
+ document.documentElement.classList.toggle('viewport-ipad',ipadViewport.matches);
+}
+foldViewport.addEventListener('change',syncViewportClass);
+ipadViewport.addEventListener('change',syncViewportClass);
+syncViewportClass();
 let paused=reducedMotion.matches;
 const motionButtons=new Set();
 function syncMotionButtons(){
@@ -242,7 +251,7 @@ mount.addEventListener('pointerup',ev=>{
  if(performance.now()-start.time>500||Math.hypot(ev.clientX-start.x,ev.clientY-start.y)>12||Math.abs(window.scrollY-start.scroll)>8)return;
  pointer(ev.clientX,ev.clientY);tapX=targetX*.75;tapY=targetY*.75;tapUntil=performance.now()+1300;wake();
 },{passive:true});
-function resize(){scrollDirty=true;camera.aspect=mount.clientWidth/mount.clientHeight;camera.position.z=camera.aspect<.65?1.38:1.18;camera.updateProjectionMatrix();renderer.setSize(mount.clientWidth,mount.clientHeight);wake();}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(mount);
+function resize(){scrollDirty=true;camera.aspect=mount.clientWidth/mount.clientHeight;camera.position.z=camera.aspect<.65?1.38:1.18;camera.zoom=foldViewport.matches?1.18:ipadViewport.matches?1.10:1;camera.updateProjectionMatrix();renderer.setSize(mount.clientWidth,mount.clientHeight);wake();}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(mount);
 let sceneVisible=true;new IntersectionObserver(([entry])=>{sceneVisible=entry.isIntersecting;scrollDirty=true;if(sceneVisible)wake();else{running=false;renderer.setAnimationLoop(null);}},{rootMargin:'100px'}).observe(mount);
 let previous=performance.now(),running=true,lastActivity=performance.now(),stableFrames=0;
 function wake(){lastActivity=performance.now();stableFrames=0;if(!sceneVisible||document.hidden){running=false;return;}if(!running){running=true;previous=performance.now();renderer.setAnimationLoop(tick);}}
