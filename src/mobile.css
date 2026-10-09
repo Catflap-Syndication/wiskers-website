@@ -1,0 +1,126 @@
+/* Mobile layouts: retain the full navigation and make touch paths deliberate. */
+.skip-link{position:fixed;z-index:20;top:10px;left:10px;transform:translateY(-160%);padding:12px 16px;background:var(--cta);color:var(--on-cta);border-radius:6px}
+.skip-link:focus{transform:translateY(0);outline:3px solid var(--focus);outline-offset:3px}
+.theme-select-wrap{display:none}
+.theme-select{font:inherit;color:var(--ink);background:var(--panel-raised);border:1px solid var(--line);border-radius:8px;padding:0 34px 0 12px;min-height:44px;min-width:128px}
+.theme-select:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+@media(max-width:700px){
+ html{scroll-padding-top:16px}
+ .nav{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand select" "links links";align-items:center;gap:10px 12px;min-height:0;height:auto;padding:14px 20px 12px}
+ .nav>.wordmark{grid-area:brand;width:max-content}
+ .wordmark-logo{width:clamp(106px,31vw,128px)}
+ .nav>.theme-switcher{display:none}
+ .theme-select-wrap{grid-area:select;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;white-space:nowrap}
+ .theme-select{min-width:124px;width:auto;font-size:14px}
+ .nav>nav{grid-area:links;display:flex;justify-content:space-between;align-items:stretch;gap:4px;width:100%;margin:0;font-size:12px}
+ .nav>nav>a,.nav>nav>.problem-trigger{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 7px;white-space:nowrap}
+ .nav>nav>.problem-trigger{font-size:12px}
+ .nav-contact{border:0;padding:8px 7px}
+ .nav-contact span{margin-left:5px}
+ .hero{display:grid;grid-template-columns:minmax(0,1fr);min-height:0;gap:0;padding:30px 20px 34px}
+ .hero-copy{min-width:0}
+ .hero-kicker{font-size:9px;letter-spacing:.8px;margin:0 0 20px}
+ .hero h1{margin-bottom:20px;letter-spacing:-1.5px}
+ .headline-premise{font-size:clamp(26px,7.4vw,34px);letter-spacing:-.8px;line-height:1.1;margin-bottom:14px}
+ .headline-payoff{font-size:clamp(52px,15vw,76px);letter-spacing:-3px;line-height:1}
+ .headline-payoff em{letter-spacing:-3px;padding-right:0}
+ .input-trace{flex-wrap:wrap;row-gap:4px;margin:14px 0 20px;font-size:9px}
+ .hero .intro{font-size:16px;line-height:1.6;margin:0 0 22px;max-width:42rem}
+ .hero-actions{gap:12px 18px;align-items:stretch}
+ .hero-actions .button,.hero-actions .text-link{min-height:48px}
+ .hero-actions .text-link{display:inline-flex;align-items:center;padding:8px 0}
+ .hero-visual{width:100%;margin:18px 0 0;align-self:auto;min-width:0}
+ #scene{height:clamp(280px,78vw,360px);max-height:360px}
+ .hero .visual-caption{margin-top:-2px;min-height:44px}
+ #motion,.cat-motion{min-height:44px;padding:10px 15px;font-size:12px}
+ .manifesto{padding:42px 20px 30px}
+ .manifesto h2{font-size:clamp(30px,8vw,38px);letter-spacing:-1.3px;margin-bottom:18px}
+ .manifesto p:not(.eyebrow){font-size:16px;line-height:1.65;margin-bottom:0}
+ .thesis{margin:0 20px 44px;padding:24px 18px;border-radius:10px}
+ .thesis-heading{display:block;margin-bottom:24px}
+ .thesis-heading h2{font-size:clamp(30px,8vw,38px);margin:0}
+ .thesis-heading>p{font-size:14px;line-height:1.6;margin-top:14px}
+ .journey-start{padding:14px 17px;font-size:14px}
+ .journey-fork{display:none}
+ .journey-columns{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .journey-label{font-size:15px;line-height:1.3;margin:0 0 12px;min-height:40px;display:flex;align-items:center;justify-content:center;text-align:center}
+ .journey-label>span{font-size:10px}
+ .journey-static .journey-label{min-height:40px}
+ .journey-list li+li{margin-top:10px}
+ .journey-list li+li:before{top:-11px;font-size:12px;background:var(--panel);line-height:12px}
+ .journey-node{min-height:76px;padding:12px 10px;border-radius:7px}
+ .journey-node>span{font-size:9px;letter-spacing:.3px;margin:0 0 7px}
+ .journey-node strong{font-size:clamp(15px,4.1vw,19px);line-height:1.2;letter-spacing:-.35px}
+ .journey-node small{font-size:11px;line-height:1.4}
+ .journey-node i{display:none}
+ .journey-detail{margin-top:18px;padding:16px 15px;min-height:0}
+ .journey-detail-label{font-size:16px}
+ .journey-detail p{font-size:13px;line-height:1.55;margin-top:8px}
+ .steps{grid-template-columns:1fr;gap:0;padding:0 20px 40px}
+ .steps article{padding:19px 0 20px}
+ .steps h3{font-size:23px;letter-spacing:-.6px;margin:0 0 8px}
+ .steps p{font-size:14px;line-height:1.65;margin:0;max-width:44rem}
+ .cat-return{min-height:0;margin:0 auto 24px;padding:0 20px}
+ .cat-return-visual{width:min(100%,360px);height:clamp(250px,76vw,300px)}
+ #scene-return{height:clamp(220px,66vw,260px)}
+ .cat-return .visual-caption{margin-top:0;min-height:44px}
+ .contact{display:flex;flex-direction:column;align-items:stretch;gap:20px;margin:0 20px 30px;padding:25px 20px;border-radius:9px}
+ .contact h2{font-size:clamp(27px,7.5vw,34px);line-height:1.15;letter-spacing:-1px;margin:0 0 12px}
+ .contact h2 br{display:none}
+ .contact p:not(.eyebrow){font-size:14px;margin:0}
+ .contact-action{max-width:none;margin:0}
+ .contact-action>.button{width:100%;min-height:48px}
+ .contact-action>p{margin-top:10px!important;text-align:center}
+ footer{padding:24px 20px 32px;display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+ footer .wordmark-logo{width:120px}
+ footer details{width:100%;max-width:none;line-height:1.6}
+ .footer-links{display:flex;width:100%;gap:4px 16px;align-items:center;flex-wrap:wrap;margin:0}
+ .footer-links a,.footer-links span{display:inline-flex;align-items:center;min-height:44px}
+ .problem-trigger{min-height:44px;padding:8px 4px;font-size:12px}
+ .problem-panel{width:calc(100% - 12px);max-width:none;max-height:calc(100vh - 12px);max-height:calc(100dvh - 12px);margin:auto;border-radius:10px;overflow:auto;overscroll-behavior:contain}
+ .problem-bar{position:sticky;top:0;padding:10px 16px;min-height:60px}
+ .problem-bar .wordmark-logo{width:112px}
+ .problem-close{min-height:44px;padding:8px 0}
+ .problem-content{padding:24px 18px 28px}
+ .problem-opening{padding-bottom:24px}
+ .problem-opening h2{font-size:clamp(39px,11vw,48px);letter-spacing:-2px;line-height:1.04;margin-bottom:18px}
+ .problem-lead{font-size:17px;line-height:1.5}
+ .problem-content p:not(.problem-lead){font-size:15px;line-height:1.65}
+ .problem-content h3{font-size:25px;line-height:1.15;margin-bottom:14px}
+ .problem-content .problem-section-title{margin-top:30px}
+ .problem-shifts,.problem-validation-grid{grid-template-columns:1fr;gap:18px}
+ .problem-shifts article{padding-top:18px}
+ .problem-content h4{font-size:20px;margin-bottom:10px}
+ .problem-table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+ .problem-comparison table{min-width:500px;font-size:13px}
+ .problem-comparison th,.problem-comparison td{padding:12px 10px;font-size:13px}
+ .problem-done{min-height:48px;width:100%}
+}
+@media(max-width:480px){
+ .nav{padding-left:16px;padding-right:16px}
+ .nav>nav{gap:0;justify-content:space-between}
+ .nav>nav>a,.nav>nav>.problem-trigger{padding-left:5px;padding-right:5px;font-size:11px}
+ .nav-contact span{display:none}
+ .hero{padding-left:18px;padding-right:18px}
+ .hero-actions{display:grid;grid-template-columns:1fr;gap:8px}
+ .hero-actions .button{width:100%}
+ .hero-actions .text-link{justify-content:center;min-height:44px}
+ .thesis{margin-left:18px;margin-right:18px;padding:22px 16px}
+ .journey-columns{grid-template-columns:1fr;gap:20px}
+ .journey-label,.journey-static .journey-label{min-height:0;margin-bottom:10px}
+ .journey-list li+li{margin-top:8px}
+ .journey-node{min-height:62px;padding:12px 14px}
+ .journey-node strong{font-size:17px}
+ .journey-active .journey-node{min-height:72px}
+ .journey-detail{margin-top:18px}
+ .contact{margin-left:18px;margin-right:18px;padding:22px 17px}
+ .cat-return{padding-left:16px;padding-right:16px}
+ .theme-select-wrap{gap:6px;font-size:11px}
+ .theme-select{min-width:112px;padding-left:9px}
+}
+@media(min-width:481px) and (max-width:700px){
+ .hero-actions .button{min-width:240px}
+ .thesis{padding:26px 22px}
+ .journey-node{min-height:86px}
+}
+@media(prefers-reduced-motion:reduce){.skip-link,.problem-panel,.journey-node{scroll-behavior:auto;transition:none}}
