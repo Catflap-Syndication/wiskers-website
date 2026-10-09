@@ -3,10 +3,22 @@ import './style.css';
 import './themes.css';
 import './themes.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const mount=document.querySelector('#scene'), status=document.querySelector('#status');
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+const mobileInput=matchMedia('(hover: none), (pointer: coarse)');
+let paused=reducedMotion.matches;
+const motionButtons=new Set();
+function syncMotionButtons(){
+ for(const button of motionButtons){button.textContent=paused?'Resume motion':'Pause motion';button.setAttribute('aria-pressed',String(paused));}
+}
+reducedMotion.addEventListener('change',event=>{if(event.matches)paused=true;syncMotionButtons();});
+// Both scenes share the compact source asset and textures. Vertex buffers and
+// cloth remain independent so each cat can respond to its own viewport position.
+let catPromise;
+function loadCat(){return catPromise??=new GLTFLoader().loadAsync('/assets/cat.glb');}
+function createCatScene({mount,status,motionButton,surfaceToken='--surface-page',variant='hero'}){
 const scene=new THREE.Scene();scene.background=null;
 const camera=new THREE.PerspectiveCamera(32,mount.clientWidth/mount.clientHeight,.01,20);camera.position.set(0,.305,1.18);camera.lookAt(0,.27,.08);
-const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(mount.clientWidth,mount.clientHeight);renderer.localClippingEnabled=true;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;mount.appendChild(renderer.domElement);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio, mobileInput.matches ? 1.5 : 2));renderer.setSize(mount.clientWidth,mount.clientHeight);renderer.localClippingEnabled=true;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;mount.appendChild(renderer.domElement);
 const ambient=new THREE.HemisphereLight(0xffffff,0x091540,2.3);scene.add(ambient);const light=new THREE.DirectionalLight(0xfff0dc,3);light.position.set(-1,2,3);scene.add(light);const fill=new THREE.DirectionalLight(0xffffff,1.1);fill.position.set(2,.5,2);scene.add(fill);
 const mat=new THREE.MeshBasicMaterial({color:'#f3f0e9',toneMapped:false});const dark=new THREE.MeshStandardMaterial({color:'#15060d',roughness:1});
 function box(w,h,d,x,y,z,material=mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);scene.add(m);return m;}
@@ -85,7 +97,7 @@ const flap=new THREE.Mesh(flapGeometry,new THREE.MeshStandardMaterial({
 function applySceneTheme(){
  const style=getComputedStyle(document.documentElement);
  const token=name=>style.getPropertyValue(name).trim();
- mat.color.set(token('--surface-page'));
+ mat.color.set(token(surfaceToken));
  housingMat.color.set(token('--scene-frame'));
  rimMat.color.set(token('--scene-rim'));hingeMat.color.set(token('--scene-rim'));
  gasketMat.color.set('#15060d');
@@ -161,10 +173,10 @@ function updateFlap(rotation,dt){
  positions.needsUpdate=true;flapGeometry.computeVertexNormals();
 }
 const pivot=new THREE.Vector3(0,.245,.115), records=[], eyes=[];
-let loaded=false,paused=matchMedia('(prefers-reduced-motion: reduce)').matches, targetX=0,targetY=0,yaw=0,pitch=0,eyeYaw=0,eyePitch=0;
-const btn=document.querySelector('#motion');function sync(){btn.textContent=paused?'Resume motion':'Pause motion';btn.setAttribute('aria-pressed',String(paused));}sync();btn.addEventListener('click',()=>{paused=!paused;sync();});
+let loaded=false,targetX=0,targetY=0,yaw=0,pitch=0,eyeYaw=0,eyePitch=0;
+if(motionButton){motionButtons.add(motionButton);syncMotionButtons();motionButton.addEventListener('click',()=>{paused=!paused;syncMotionButtons();});}
 const v=new THREE.Vector3(),n=new THREE.Vector3(),q=new THREE.Quaternion(),eyeQ=new THREE.Quaternion(),euler=new THREE.Euler(0,0,0,'YXZ');
-new GLTFLoader().load('/assets/cat.glb',gltf=>{
+loadCat().then(gltf=>{
  gltf.scene.updateMatrixWorld(true);
  gltf.scene.traverse(m=>{if(!m.isMesh||!m.isSkinnedMesh)return;
   const geo=m.geometry.clone(),pos=geo.attributes.position,norm=geo.attributes.normal;
@@ -189,18 +201,70 @@ new GLTFLoader().load('/assets/cat.glb',gltf=>{
   const weights=new Float32Array(pos.count);for(let i=0;i<pos.count;i++){const y=base[i*3+1];weights[i]=THREE.MathUtils.smoothstep(y,.20,.255);}
   const rec={mesh,base,normals,weights,center,eye};records.push(rec);if(eye)eyes.push(rec);
  });
- loaded=true;status.hidden=true;window.wiskersPrototype={loaded:true,meshes:records.length,eyeMeshes:eyes.length,setTarget:(x,y)=>{targetX=x;targetY=y;},getPose:()=>({yaw,pitch,eyeYaw,eyePitch})};
-},undefined,error=>{status.textContent='The cat could not load. Please refresh.';console.error(error);});
+ loaded=true;status.hidden=true;
+ const diagnostics={loaded:true,meshes:records.length,eyeMeshes:eyes.length,setTarget:(x,y)=>{targetX=x;targetY=y;},getPose:()=>({yaw,pitch,eyeYaw,eyePitch}),getInputMode:()=>mobileInput.matches?'scroll':'pointer'};
+ window.wiskersScenes??={};window.wiskersScenes[variant]=diagnostics;
+ if(variant==='hero')window.wiskersPrototype=diagnostics;
+}).catch(error=>{status.textContent='The cat could not load. Please refresh.';console.error(error);});
 function pointer(x,y){const rect=mount.getBoundingClientRect(),face=new THREE.Vector3(0,.31+headLift,.23).project(camera);const cx=rect.left+(face.x+1)*rect.width/2,cy=rect.top+(1-face.y)*rect.height/2;targetX=THREE.MathUtils.clamp((x-cx)/(innerWidth*.45),-1,1);targetY=THREE.MathUtils.clamp((y-cy)/(innerHeight*.4),-1,1);}
-window.addEventListener('pointermove',ev=>{if(ev.pointerType==='mouse')pointer(ev.clientX,ev.clientY);});document.documentElement.addEventListener('pointerleave',()=>{targetX=targetY=0;});window.addEventListener('blur',()=>{targetX=targetY=0;});
-function resize(){camera.aspect=mount.clientWidth/mount.clientHeight;camera.position.z=camera.aspect<.65?1.38:1.18;camera.updateProjectionMatrix();renderer.setSize(mount.clientWidth,mount.clientHeight);}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(mount);resize();
-let sceneVisible=true;new IntersectionObserver(([entry])=>{sceneVisible=entry.isIntersecting;},{rootMargin:'100px'}).observe(mount);
+// Fine pointers retain the original page-wide tracking. Coarse pointers get a
+// gentle gaze based on this scene's viewport position, without intercepting scroll.
+let scrollDirty=true,scrollX=0,scrollY=0,tapUntil=0,tapX=0,tapY=0,touchStart=null;
+function updateScrollGaze(){
+ const rect=mount.getBoundingClientRect();
+ const progress=THREE.MathUtils.clamp((innerHeight-rect.top)/(innerHeight+rect.height),0,1);
+ scrollX=Math.sin(progress*Math.PI*2)*(variant==='contact'?.24:.30);
+ scrollY=(progress-.5)*(variant==='contact'?1.05:1.25);
+ scrollDirty=false;
+}
+window.addEventListener('scroll',()=>{scrollDirty=true;},{passive:true});
+mobileInput.addEventListener('change',()=>{scrollDirty=true;tapUntil=0;targetX=targetY=0;});
+window.addEventListener('pointermove',ev=>{if(ev.pointerType==='mouse'&&!mobileInput.matches)pointer(ev.clientX,ev.clientY);},{passive:true});
+document.documentElement.addEventListener('pointerleave',()=>{targetX=targetY=0;});
+window.addEventListener('blur',()=>{targetX=targetY=0;tapUntil=0;});
+// A tap is optional. Pointer movement or page movement cancels it, so a normal
+// swipe through the cat never turns into a tap or blocks the browser's gestures.
+mount.addEventListener('pointerdown',ev=>{
+ if(ev.pointerType!=='touch'&& !mobileInput.matches)return;
+ if(!ev.isPrimary)return;
+ touchStart={id:ev.pointerId,x:ev.clientX,y:ev.clientY,scroll:window.scrollY,time:performance.now()};
+},{passive:true});
+mount.addEventListener('pointercancel',()=>{touchStart=null;},{passive:true});
+mount.addEventListener('pointerup',ev=>{
+ const start=touchStart;touchStart=null;
+ if(!start||start.id!==ev.pointerId||paused)return;
+ if(performance.now()-start.time>500||Math.hypot(ev.clientX-start.x,ev.clientY-start.y)>12||Math.abs(window.scrollY-start.scroll)>8)return;
+ pointer(ev.clientX,ev.clientY);tapX=targetX*.75;tapY=targetY*.75;tapUntil=performance.now()+1300;
+},{passive:true});
+function resize(){scrollDirty=true;camera.aspect=mount.clientWidth/mount.clientHeight;camera.position.z=camera.aspect<.65?1.38:1.18;camera.updateProjectionMatrix();renderer.setSize(mount.clientWidth,mount.clientHeight);}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(mount);resize();
+let sceneVisible=true;new IntersectionObserver(([entry])=>{sceneVisible=entry.isIntersecting;scrollDirty=true;},{rootMargin:'100px'}).observe(mount);
 let previous=performance.now();renderer.setAnimationLoop(now=>{const dt=Math.min((now-previous)/1000,.05);previous=now;if(document.hidden||!sceneVisible)return;
- const x=paused?0:targetX,y=paused?0:targetY;yaw=THREE.MathUtils.damp(yaw,x*.34,9,dt);pitch=THREE.MathUtils.damp(pitch,y*.19,9,dt);eyeYaw=THREE.MathUtils.damp(eyeYaw,x*.12,18,dt);eyePitch=THREE.MathUtils.damp(eyePitch,y*.08,18,dt);q.setFromEuler(euler.set(pitch+.075,yaw,0));eyeQ.setFromEuler(euler.set(eyePitch,eyeYaw,0));
+ if(mobileInput.matches&&!paused){if(scrollDirty)updateScrollGaze();targetX=now<tapUntil?tapX:scrollX;targetY=now<tapUntil?tapY:scrollY;}
+ const x=paused?0:targetX,y=paused?0:targetY;yaw=THREE.MathUtils.damp(yaw,x*(mobileInput.matches?.27:.34),9,dt);pitch=THREE.MathUtils.damp(pitch,y*(mobileInput.matches?.15:.19),9,dt);eyeYaw=THREE.MathUtils.damp(eyeYaw,x*.12,18,dt);eyePitch=THREE.MathUtils.damp(eyePitch,y*.08,18,dt);q.setFromEuler(euler.set(pitch+.075,yaw,0));eyeQ.setFromEuler(euler.set(eyePitch,eyeYaw,0));
  if(loaded)for(const r of records){const p=r.mesh.geometry.attributes.position,normal=r.mesh.geometry.attributes.normal;for(let i=0;i<p.count;i++){const j=i*3;v.fromArray(r.base,j);n.fromArray(r.normals,j);if(r.eye){v.sub(r.center).applyQuaternion(eyeQ).add(r.center);n.applyQuaternion(eyeQ);v.sub(pivot).applyQuaternion(q).add(pivot);n.applyQuaternion(q);}else{const w=r.weights[i];if(w>0){const bx=v.x,by=v.y,bz=v.z;v.sub(pivot).applyQuaternion(q).add(pivot);v.set(THREE.MathUtils.lerp(bx,v.x,w),THREE.MathUtils.lerp(by,v.y,w),THREE.MathUtils.lerp(bz,v.z,w));const nx=n.x,ny=n.y,nz=n.z;n.applyQuaternion(q);n.set(THREE.MathUtils.lerp(nx,n.x,w),THREE.MathUtils.lerp(ny,n.y,w),THREE.MathUtils.lerp(nz,n.z,w)).normalize();}}p.setXYZ(i,v.x,v.y,v.z);normal.setXYZ(i,n.x,n.y,n.z);}p.needsUpdate=normal.needsUpdate=true;}
  updateFlap(q,dt);
  renderer.render(scene,camera);
 });
+
+}
+function mountCatScene(options){
+ try{createCatScene(options);}catch(error){
+  options.status.hidden=false;options.status.textContent='The cat preview is unavailable on this device.';
+  if(options.motionButton)options.motionButton.hidden=true;
+  console.error(error);
+ }
+}
+mountCatScene({mount:document.querySelector('#scene'),status:document.querySelector('#status'),motionButton:document.querySelector('#motion')});
+const contactMount=document.querySelector('#scene-contact');
+if(contactMount){
+ // Allocate the second renderer only when someone approaches the contact area.
+ const observer=new IntersectionObserver(entries=>{
+  if(!entries.some(entry=>entry.isIntersecting))return;
+  observer.disconnect();
+  mountCatScene({mount:contactMount,status:document.querySelector('#status-contact'),motionButton:document.querySelector('#motion-contact'),surfaceToken:'--panel',variant:'contact'});
+ },{rootMargin:'250px'});
+ observer.observe(contactMount);
+}
 
 // Accessible step exploration for the thesis diagram.
 const journeyDetails=[
