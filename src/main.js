@@ -251,7 +251,22 @@ mount.addEventListener('pointerup',ev=>{
  if(performance.now()-start.time>500||Math.hypot(ev.clientX-start.x,ev.clientY-start.y)>12||Math.abs(window.scrollY-start.scroll)>8)return;
  pointer(ev.clientX,ev.clientY);tapX=targetX*.75;tapY=targetY*.75;tapUntil=performance.now()+1300;wake();
 },{passive:true});
-function resize(){scrollDirty=true;camera.aspect=mount.clientWidth/mount.clientHeight;camera.position.z=camera.aspect<.65?1.38:1.18;camera.zoom=foldViewport.matches?1.18:ipadViewport.matches?1.10:1;camera.updateProjectionMatrix();renderer.setSize(mount.clientWidth,mount.clientHeight);wake();}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(mount);
+function resize(){
+ scrollDirty=true;
+ camera.aspect=mount.clientWidth/mount.clientHeight;
+ camera.position.z=camera.aspect<.65?1.38:1.18;
+ const narrow=innerWidth<=480,tabletStacked=ipadViewport.matches&&innerWidth<=820;
+ const desiredZoom=variant==='return'
+  ? foldViewport.matches?1.44:ipadViewport.matches?1.32:narrow?1.22:1
+  : foldViewport.matches?1.38:tabletStacked?1.28:ipadViewport.matches?1.16:narrow?1.22:1;
+ // Keep the frame inside narrow tablet columns while filling the vertical scene.
+ camera.zoom=Math.min(desiredZoom,camera.aspect*1.43);
+ camera.lookAt(0,variant==='return' ? .34 : .315,.08);
+ camera.updateProjectionMatrix();renderer.setSize(mount.clientWidth,mount.clientHeight);
+ // Resizing clears the WebGL drawing buffer, so restart even if an old idle
+ // loop still thinks it is active.
+ renderer.setAnimationLoop(null);running=false;wake();
+}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(mount);
 let sceneVisible=true;new IntersectionObserver(([entry])=>{sceneVisible=entry.isIntersecting;scrollDirty=true;if(sceneVisible)wake();else{running=false;renderer.setAnimationLoop(null);}},{rootMargin:'100px'}).observe(mount);
 let previous=performance.now(),running=true,lastActivity=performance.now(),stableFrames=0;
 function wake(){lastActivity=performance.now();stableFrames=0;if(!sceneVisible||document.hidden){running=false;return;}if(!running){running=true;previous=performance.now();renderer.setAnimationLoop(tick);}}
